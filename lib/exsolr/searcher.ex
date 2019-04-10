@@ -23,6 +23,7 @@ defmodule Exsolr.Searcher do
     collection = case params |> Enum.find(fn {key, _value} -> key == :collection end) do
       {:collection, collection} -> collection
       _ -> nil
+    end
     query_params
     |> build_solr_query
     |> do_search(collection)
@@ -77,10 +78,10 @@ defmodule Exsolr.Searcher do
     |> Enum.join("&")
   end
   defp build_solr_query_parameter(:q, value) do
-    "q=#{URI.encode_www_form(value)}"
+    "q=#{encode_value(value)}"
   end
   defp build_solr_query_parameter(key, value) do
-    [Atom.to_string(key), value]
+    [Atom.to_string(key), encode_value(value)]
     |> Enum.join("=")
   end
 
@@ -102,6 +103,14 @@ defmodule Exsolr.Searcher do
       {:ok, %{"response" => response, "moreLikeThis" => moreLikeThis}} -> Map.put(response, "mlt", extract_mlt_result(moreLikeThis))
       {:ok, %{"response" => response}} -> response
     end
+  end
+
+  defp encode_value(value) when is_binary(value) do
+    URI.encode_www_form(value)
+  end
+
+  defp encode_value(value) do
+    value
   end
 
   defp extract_mlt_result(mlt) do
