@@ -37,7 +37,7 @@ defmodule Exsolr.Indexer do
   """
   def delete_all(options) do
     update_request(xml_headers, delete_all_xml_body, options)
-    commit
+    commit(options)
   end
 
   @doc """
