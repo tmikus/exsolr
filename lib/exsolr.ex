@@ -28,8 +28,8 @@ defmodule Exsolr do
       iex> Exsolr.get(q: "red roses", defType: "disMax")
 
   """
-  def get(query_params) do
-    Searcher.get(query_params)
+  def get(query_params, options \\ %{}) do
+    Searcher.get(query_params, options)
   end
 
   @doc """
@@ -40,22 +40,22 @@ defmodule Exsolr do
       iex> Exsolr.add(%{id: 1, price: 1.00})
 
   """
-  def add(document) do
-    Indexer.add(document)
+  def add(document, options \\ %{}) do
+    Indexer.add(document, options)
   end
 
   @doc """
   Commits the pending changes to Solr
   """
-  def commit do
-    Indexer.commit
+  def commit(options \\ %{}) do
+    Indexer.commit(options)
   end
 
   @doc """
   Delete the document with id `id` from the solr index
   """
-  def delete_by_id(id) do
-    Indexer.delete_by_id(id)
+  def delete_by_id(id, options \\ %{}) do
+    Indexer.delete_by_id(id, options)
   end
 
   @doc """
@@ -63,7 +63,7 @@ defmodule Exsolr do
 
   https://wiki.apache.org/solr/FAQ#How_can_I_delete_all_documents_from_my_index.3F
   """
-  def delete_all do
-    Indexer.delete_all
+  def delete_all(options \\ %{}) do
+    Indexer.delete_all(options)
   end
 end

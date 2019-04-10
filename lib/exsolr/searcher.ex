@@ -8,23 +8,13 @@ defmodule Exsolr.Searcher do
   alias Exsolr.Config
   alias Exsolr.HttpResponse
 
-  def get do
-    get(default_parameters)
-  end
-
   @doc """
   Receives the query params, converts them to an url, queries Solr and builds
   the response
   """
-  def get(params) do
-    query_params =
-      params
-      |> Enum.filter(fn {key, _value} -> key != :collection end)
-    collection = case params |> Enum.find(fn {key, _value} -> key == :collection end) do
-      {:collection, collection} -> collection
-      _ -> nil
-    end
-    query_params
+  def get(params, options) do
+    collection = options[:collection]
+    params
     |> build_solr_query
     |> do_search(collection)
     |> extract_response
