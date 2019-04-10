@@ -39,10 +39,11 @@ defmodule Exsolr.Config do
 
   ## Examples
 
-      iex> Exsolr.Config.update_url
+      iex> Exsolr.Config.update_url()
       "http://localhost:8983/solr/elixir_test/update"
   """
-  def update_url, do: "#{base_url}/update"
+  def update_url, do: update_url('')
+  def update_url(collection), do: "#{base_url(collection)}/update"
 
   defp base_url(collection) do
     "http://#{hostname}:#{port}/solr/#{collection || core}"
