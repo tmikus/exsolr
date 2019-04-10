@@ -19,10 +19,13 @@ defmodule Exsolr.Searcher do
   def get(params) do
     query_params =
       params
-      |> Map.drop([:collection])
+      |> Enum.filter(fn {key, _value} -> key != :collection end)
+    collection = case params |> Enum.find(fn {key, _value} -> key == :collection end) do
+      {:collection, collection} -> collection
+      _ -> nil
     query_params
     |> build_solr_query
-    |> do_search(params[:collection])
+    |> do_search(collection)
     |> extract_response
   end
 
