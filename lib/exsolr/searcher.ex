@@ -17,9 +17,12 @@ defmodule Exsolr.Searcher do
   the response
   """
   def get(params) do
-    params
+    query_params =
+      params
+      |> Map.drop([:collection])
+    query_params
     |> build_solr_query
-    |> do_search
+    |> do_search(params[:collection])
     |> extract_response
   end
 
@@ -78,15 +81,15 @@ defmodule Exsolr.Searcher do
     |> Enum.join("=")
   end
 
-  def do_search(solr_query) do
+  def do_search(solr_query, collection) do
     solr_query
-    |> build_solr_url
+    |> build_solr_url(collection)
     |> HTTPoison.get
     |> HttpResponse.body
   end
 
-  defp build_solr_url(solr_query) do
-    url = Config.select_url <> solr_query
+  defp build_solr_url(solr_query, collection) do
+    url = Config.select_url(collection) <> solr_query
     _ = Logger.debug url
     url
   end
@@ -98,7 +101,7 @@ defmodule Exsolr.Searcher do
     end
   end
 
-  defp extract_mlt_result(mlt) do 
+  defp extract_mlt_result(mlt) do
     result =
     for k <- Map.keys(mlt), do: get_in(mlt, [k, "docs"])
     result |> List.flatten
