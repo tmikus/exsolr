@@ -7,7 +7,8 @@ defmodule Exsolr.Indexer do
   alias Exsolr.HttpResponse
 
   def add(document, options) do
-    options[:collection]
+    options
+    |> Map.put("commit", true)
     |> json_docs_update_url
     |> HTTPoison.post(encode(document), json_headers())
     |> HttpResponse.body
@@ -86,7 +87,17 @@ defmodule Exsolr.Indexer do
 
   defp delete_all_xml_body, do: "<delete><query>*:*</query></delete>"
 
-  defp json_docs_update_url(collection), do: "#{Config.update_url(collection)}/json/docs"
+  defp json_docs_update_url(options) do
+    collection = options[:collection]
+    query_string =
+      options
+      |> Map.drop([:collection])
+      |> Map.to_list
+      |> Enum.reject(fn {key, _value} -> key == nil end)
+      |> URI.encode_query
+
+    "#{Config.update_url(collection)}/json/docs?#{query_string}"
+  end
 
   defp encode(document) do
     {:ok, body} = Poison.encode(document)
