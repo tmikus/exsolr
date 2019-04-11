@@ -53,7 +53,7 @@ defmodule Exsolr.Searcher do
   end
 
   defp add_default_params(params) do
-    default_parameters
+    default_parameters()
     |> Keyword.merge(params)
   end
 

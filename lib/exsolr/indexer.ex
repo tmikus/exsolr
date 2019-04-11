@@ -9,7 +9,7 @@ defmodule Exsolr.Indexer do
   def add(document, options) do
     options[:collection]
     |> json_docs_update_url
-    |> HTTPoison.post(encode(document), json_headers)
+    |> HTTPoison.post(encode(document), json_headers())
     |> HttpResponse.body
   end
 
@@ -27,7 +27,7 @@ defmodule Exsolr.Indexer do
   https://cwiki.apache.org/confluence/display/solr/Uploading+Data+with+Index+Handlers#UploadingDatawithIndexHandlers-JSONFormattedIndexUpdates
   """
   def delete_by_id(id, options) do
-    update_request(json_headers, delete_by_id_json_body(id), options)
+    update_request(json_headers(), delete_by_id_json_body(id), options)
   end
 
   @doc """
@@ -36,7 +36,7 @@ defmodule Exsolr.Indexer do
   https://wiki.apache.org/solr/FAQ#How_can_I_delete_all_documents_from_my_index.3F
   """
   def delete_all(options) do
-    update_request(xml_headers, delete_all_xml_body, options)
+    update_request(xml_headers(), delete_all_xml_body(), options)
     commit(options)
   end
 
@@ -44,7 +44,10 @@ defmodule Exsolr.Indexer do
   Commit changes into Solr
   """
   def commit(options) do
-    update_request(xml_headers, commit_xml_body, options)
+    options[:collection]
+    |> Config.update_url
+    |> Kernel.<>("?commit=true")
+    |> HTTPoison.get()
   end
 
   defp update_request(headers, body, options) do
@@ -82,7 +85,6 @@ defmodule Exsolr.Indexer do
   end
 
   defp delete_all_xml_body, do: "<delete><query>*:*</query></delete>"
-  defp commit_xml_body, do: "<commit/>"
 
   defp json_docs_update_url(collection), do: "#{Config.update_url(collection)}/json/docs"
 
