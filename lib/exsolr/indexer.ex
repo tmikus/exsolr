@@ -14,6 +14,15 @@ defmodule Exsolr.Indexer do
     |> HttpResponse.body
   end
 
+  def update(document, options) do
+    options
+    |> Map.put("commit", true)
+    |> Map.put("overwrite", true)
+    |> json_docs_update_url
+    |> HTTPoison.post(encode(document), json_headers())
+    |> HttpResponse.body
+  end
+
   @doc """
   Delete the document with id `id` from the solr index
 

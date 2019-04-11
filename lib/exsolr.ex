@@ -66,4 +66,16 @@ defmodule Exsolr do
   def delete_all(options \\ %{}) do
     Indexer.delete_all(options)
   end
+
+  @doc """
+  Updates the existing Solr `document`.
+
+  ## Example
+
+      iex> Exsolr.update(%{id: 1, price: 2.00})
+
+  """
+  def update(document, options \\ %{}) do
+    Indexer.update(document, options)
+  end
 end
